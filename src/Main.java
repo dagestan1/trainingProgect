@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -20,7 +19,7 @@ public class Main {
             }
         }
     }
-    public String printMenu() {
-
+    private static void printMenu() {
+        System.out.println("Введите долбанную цифру!");
     }
 }

@@ -1,12 +1,13 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class YearlyReport {
-    public ArrayList<YearlyReportTransaction> YearlyReportTransactions = new ArrayList<>();
-    FileReader fileReader = new FileReader();
+    private final ArrayList<MonthReportSummary> monthReportSummaries = new ArrayList<>();
+    private final FileReader fileReader = new FileReader();
+
+    public ArrayList<MonthReportSummary> getMonthReportSummary() {
+        return monthReportSummaries;
+    }
+
     public YearlyReport(String path) {
         ArrayList<String> lines = fileReader.readFileContents(path);
         for (int i = 1; i < lines.size(); i++) {
@@ -15,21 +16,19 @@ public class YearlyReport {
             int amount = Integer.parseInt(parts[1]);
             boolean isExpense = Boolean.parseBoolean(parts[2]);
 
-        YearlyReportTransaction report = new YearlyReportTransaction(month, amount, isExpense);
-        YearlyReportTransactions.add(report);
+            MonthReportSummary report = new MonthReportSummary(month, amount, isExpense);
+            monthReportSummaries.add(report);
         }
-
     }
+
     public int getAverageIncome() {
         int count = 0;
         int sum = 0;
-        for (YearlyReportTransaction yearlyReportTransaction : YearlyReportTransactions) {
-            if(yearlyReportTransaction.isExpense) {
-            count++;
-            sum = yearlyReportTransaction.amount;
-        }
-        
-
+        for (MonthReportSummary monthReportSummary : monthReportSummaries) {
+            if (monthReportSummary.isExpense()) {
+                count++;
+                sum += monthReportSummary.getAmount();
+            }
         }
         return sum / count;
     }

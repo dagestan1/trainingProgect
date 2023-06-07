@@ -1,11 +1,10 @@
 import java.util.HashMap;
+import java.util.Map;
 
 public class ReportEngine {
 
-    YearlyReport yearlyReport;
-    HashMap<Integer, MonthlyReport> monthlyReportsByMonth;
-
-    MonthlyReport monthlyReport = new MonthlyReport(path);
+    private YearlyReport yearlyReport;
+    private final Map<Integer, MonthlyReport> monthlyReportsByMonth = new HashMap<>();
 
     public void loadMonthlyReports() {
         if (monthlyReportsByMonth.size() != 0) {
@@ -19,17 +18,18 @@ public class ReportEngine {
             System.out.println("Считан отчёт " + path);
         }
     }
+
     public void loadYearlyReports() {
 
-        if(yearlyReport != null) {
+        if (yearlyReport != null) {
             System.out.println("Годовые отчеты уже считаны");
             return;
         }
-        String path = "y.2021.csv";
-        YearlyReport report = new YearlyReport(path);
-        yearlyReport = report;
+        final String path = "y.2021.csv";
+        this.yearlyReport = new YearlyReport(path);
         System.out.println("Считан отчёт " + path);
     }
+
     public void check() {
         if (monthlyReportsByMonth.size() == 0 || yearlyReport == null) {
             System.out.println("Проверьте, все ли отчеты считанны, если нет, считайте их.");
@@ -38,24 +38,27 @@ public class ReportEngine {
         }
         boolean checkedAll = true;
         for (Integer monthNumber : monthlyReportsByMonth.keySet()) {
-            checkedAll = checkedAll && checkReports(monthNumber, monthlyReportsByMonth.get(monthNumber));
+            checkedAll = checkedAll && checkReports(monthNumber);
         }
+    }
 
-    private boolean checkReports(Integer month, MonthlyReport monthlyReport) {
-            for(YearlyReportTransaction transaction : yearlyReport.YearlyReportTransactions) {
-                if (transaction.month == month) {
-                    if (transaction.isExpense) {
-                        if (monthlyReport.getSumExpenses() != transaction.amount) {
-                            System.out.println(monthHelper.getMonthByNumber(month) + " : несоответствие расходов");
-                            return false;
-                        }
-                    } else if (monthlyReport.getTopProduct() != transaction.amount) {
-                        System.out.println(monthHelper.getMonthByNumber(month) + " : несоответствие доходов");
+    private boolean checkReports(Integer month) {
+        final MonthlyReport monthlyReport = monthlyReportsByMonth.get(month);
+        for (MonthReportSummary monthReportSummary : yearlyReport.getMonthReportSummary()) {
+            if (monthReportSummary.getMonth() == month) {
+                if (monthReportSummary.isExpense()) {
+                    if (monthlyReport.getSumExpenses() != monthReportSummary.getAmount()) {
+                        System.out.println("В " + Month.getByOrder(month).getName() + " несоответствие расходов. Согласно годовому отчёту " + monthReportSummary.getAmount() + " рублей, согласно месячному " + monthlyReport.getSumExpenses() + " рублей");
+                        return false;
+                    }
+                } else {
+                    if (monthlyReport.getSumIncomes() != monthReportSummary.getAmount()) {
+                        System.out.println("В " + Month.getByOrder(month).getName() + " несоответствие доходов.  Согласно годовому отчёту " + monthReportSummary.getAmount() + " рублей, согласно месячному " + monthlyReport.getSumIncomes() + " рублей");
                         return false;
                     }
                 }
             }
-            return true;
         }
+            return true;
     }
 }
