@@ -1,0 +1,4 @@
+itemName,isExpense,quantity,unitPrice
+Компьютеры,TRUE,20,20000
+Тренажеры,FALSE,3,35000
+Перчатки,FALSE,1500,100

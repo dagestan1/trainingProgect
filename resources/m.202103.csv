@@ -1,0 +1,4 @@
+itemName,isExpense,quantity,unitPrice
+Тарелки,FALSE,500,300
+Часы,TRUE,15,12000
+Книги,TRUE,700,900
